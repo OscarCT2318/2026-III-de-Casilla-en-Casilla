@@ -14,14 +14,15 @@ class UsuarioCreateForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            field.widget.attrs['class'] = 'form-control'
+            field.widget.attrs['class'] = (
+                'form-select' if isinstance(field.widget, forms.Select) else 'form-control'
+            )
         self.fields['username'].widget.attrs['placeholder'] = 'Nombre'
         self.fields['username'].help_text = ''
         self.fields['email'].widget.attrs['placeholder'] = 'Correo'
         self.fields['telefono'].widget.attrs['placeholder'] = 'Teléfono'
         self.fields['password1'].widget.attrs['placeholder'] = 'Contraseña'
         self.fields['password2'].widget.attrs['placeholder'] = 'Confirmar contraseña'
-
 
 class UsuarioUpdateForm(forms.ModelForm):
     class Meta:
@@ -33,7 +34,6 @@ class UsuarioUpdateForm(forms.ModelForm):
             'rol': forms.Select(attrs={'class': 'form-select'}),
             'telefono': forms.TextInput(attrs={'class': 'form-control'}),
         }
-
 
 class PermisoForm(forms.ModelForm):
     class Meta:
