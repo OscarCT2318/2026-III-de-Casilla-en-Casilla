@@ -1,0 +1,25 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#111827">
+    <title>{% block title %}De Casilla en Casilla{% endblock %} · UTVAM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'game/css/global.css' %}">
+    {% block styles %}{% endblock %}
+  </head>
+  <body>
+    {% include 'usuarios/navigation.html' %}
+    <main class="page-content">{% block content %}{% endblock %}</main>
+    <footer class="site-footer">
+      <p>Desarrollado por Ingeniería en Desarrollo y Gestión de Software</p>
+      <strong>UTVAM</strong>
+      <small>Universidad Tecnológica de la Zona Metropolitana del Valle de México · {% now "Y" %}</small>
+    </footer>
+    <script src="{% static 'usuarios/js/phone-input.js' %}" defer></script>
+  </body>
+</html>

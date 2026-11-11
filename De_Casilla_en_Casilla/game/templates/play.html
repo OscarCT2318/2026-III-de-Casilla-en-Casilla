@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Nivel {{ level_name }}{% endblock %}
+{% block styles %}
+  <link rel="stylesheet" href="{% static 'game/css/game.css' %}">
+  <link rel="stylesheet" href="{% static 'game/css/board.css' %}">
+{% endblock %}
+{% block content %}
+  <section class="game-container" id="game-app" data-question-url="{% url 'question' %}" data-setup-url="{% url 'setup' %}" data-sound-prefix="{% static 'game/sounds/' %}">
+    <header class="game-heading">
+      <div><p class="eyebrow">{{ level_icon }} {{ level_description }}</p><h1 class="level-title">Nivel {{ level_name }}</h1></div>
+      <button type="button" class="mute-btn" id="mute-button" aria-pressed="false">🔊 Sonido</button>
+    </header>
+    <div class="turn-indicator" id="turn-indicator" aria-live="polite">
+      <span class="turn-avatar" id="turn-avatar">🎲</span>
+      <div class="turn-info"><strong class="turn-team" id="turn-team"></strong><span class="turn-member">Juega: <strong id="turn-member"></strong></span><small id="round-indicator"></small></div>
+    </div>
+    <div class="timer-box" id="timer-box" hidden><span class="timer-icon">⏱️</span><span id="time-left">0</span><span>segundos</span></div>
+    <section class="question-card glass-panel" aria-live="polite">
+      <p class="question-category" id="question-category"></p>
+      <h2 id="math-question">Preparando el reto…</h2>
+      <div class="fruits-container" id="options-container"></div>
+      <p class="feedback" id="feedback-message" role="status"></p>
+      <button class="btn-primary next-question hidden" id="btn-next-question" type="button">Siguiente turno ➜</button>
+    </section>
+
+    <section class="mapa-container glass-panel" aria-labelledby="board-title">
+      <h2 class="mapa-info" id="board-title">🗺️ Camino al éxito</h2>
+      <div class="camino-tablero" id="camino-tablero" aria-label="Tablero"></div>
+      <section class="leaderboard-section">
+        <h3 class="leaderboard-title">📊 Posiciones de los equipos</h3>
+        <div class="leaderboard-list" id="leaderboard-list"></div>
+      </section>
+    </section>
+  </section>
+
+  <div class="modal-overlay" id="rules-modal" role="dialog" aria-modal="true" aria-labelledby="rules-title">
+    <div class="modal-card glass-panel">
+      <span class="modal-icon">{{ level_icon }}</span>
+      <h2 id="rules-title">¡Bienvenidos al nivel {{ level_name }}!</h2>
+      <p class="modal-subtitle">{% if configuration.level == "Alpha" %}Resuelvan sumas, restas y retos matemáticos para avanzar.{% else %}Resuelvan multiplicaciones, divisiones y retos contra reloj.{% endif %}</p>
+      <ul class="rules-list"><li>🎯 Elige la respuesta correcta entre las opciones.</li><li>🎲 Si aciertas, avanza con la ruleta; si fallas, retrocede.</li><li>🏆 El primer equipo en llegar a la meta gana.</li></ul>
+      <button class="btn-primary modal-btn" id="btn-close-rules" type="button">¡Iniciar misión! 🎲</button>
+    </div>
+  </div>
+
+  <div class="wheel-overlay hidden" id="wheel-modal" role="dialog" aria-modal="true" aria-labelledby="wheel-title">
+    <div class="wheel-card glass-panel">
+      <h2 id="wheel-title">¡Gira la ruleta!</h2>
+      <div class="wheel-pointer">▼</div>
+      <div class="wheel" id="wheel" aria-hidden="true"><span>1</span><span>2</span><span>3</span></div>
+      <button class="btn-primary wheel-button" id="spin-wheel" type="button">Girar ruleta</button>
+      <p id="wheel-result" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <div class="victoria-overlay hidden" id="victory-modal" role="dialog" aria-modal="true" aria-labelledby="winner-name">
+    <div class="victoria-card glass-panel">
+      <span class="victoria-badge">🏆 ¡VICTORIA! 🏆</span>
+      <div class="victoria-avatar" id="winner-avatar">🏆</div>
+      <h2 class="victoria-team-name" id="winner-name">Equipo ganador</h2>
+      <p>¡Han demostrado ser increíbles matemáticos y llegaron a la meta!</p>
+      <div class="table-wrap"><table class="stats-table"><thead><tr><th>Equipo</th><th>Casilla</th><th>Aciertos</th><th>Errores</th></tr></thead><tbody id="victory-stats"></tbody></table></div>
+      <button class="btn-primary btn-play-again" id="btn-play-again" type="button">Jugar de nuevo 🎮</button>
+    </div>
+  </div>
+  {{ configuration|json_script:"game-configuration" }}
+  <script src="{% static 'game/js/game.js' %}" defer></script>
+{% endblock %}

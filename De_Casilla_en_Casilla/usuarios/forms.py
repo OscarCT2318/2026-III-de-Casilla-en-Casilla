@@ -1,78 +1,104 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
-
-from .models import Usuario
 
 
-class UsuarioCreateForm(UserCreationForm):
+from .models import (
+    PERMISOS_USUARIOS,
+    VALIDAR_TELEFONO_NUMERICO,
+    Usuario,
+)
+
+
+def configurar_campo_telefono(form):
+    field = form.fields['telefono']
+    field.validators.append(VALIDAR_TELEFONO_NUMERICO)
+    field.widget.attrs.update(
+        {
+            'inputmode': 'numeric',
+            'pattern': '[0-9]*',
+            'maxlength': '20',
+            'title': 'Ingresa solo números.',
+            'data-digits-only': 'true',
+        }
+    )
+
+
+def aplicar_estilos_bootstrap(form):
+    """Aplica las clases de Bootstrap a todos los campos del formulario automáticamente"""
+    for field in form.fields.values():
+        if isinstance(field.widget, forms.Select):
+            field.widget.attrs['class'] = 'form-select'
+        elif isinstance(field.widget, forms.CheckboxInput):
+            field.widget.attrs['class'] = 'form-check-input'
+        else:
+            field.widget.attrs['class'] = 'form-control'
+
+class RegistroPublicoForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = Usuario
-        fields = ('username', 'email', 'rol', 'telefono')
+        fields = ('username', 'email', 'telefono')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs['class'] = 'form-control'
-        self.fields['username'].widget.attrs['placeholder'] = 'Nombre'
+        aplicar_estilos_bootstrap(self)
+        self.fields['username'].widget.attrs['placeholder'] = 'Nombre de usuario'
         self.fields['username'].help_text = ''
-        self.fields['email'].widget.attrs['placeholder'] = 'Correo'
+        self.fields['email'].widget.attrs['placeholder'] = 'Correo electrónico'
         self.fields['telefono'].widget.attrs['placeholder'] = 'Teléfono'
         self.fields['password1'].widget.attrs['placeholder'] = 'Contraseña'
         self.fields['password2'].widget.attrs['placeholder'] = 'Confirmar contraseña'
+        configurar_campo_telefono(self)
+
+
+def configurar_permisos_usuario(form):
+    field = form.fields['user_permissions']
+    field.queryset = Permission.objects.filter(
+        content_type__app_label='usuarios',
+        content_type__model='usuario',
+        codename__in=[codename for codename, _ in PERMISOS_USUARIOS],
+    ).order_by('codename')
+    field.label = 'Permisos de usuarios'
+    field.help_text = 'Marca las acciones que este usuario puede realizar.'
+    permission_labels = dict(PERMISOS_USUARIOS)
+    field.label_from_instance = lambda permission: permission_labels[
+        permission.codename
+    ]
+    field.widget = forms.CheckboxSelectMultiple(
+        attrs={'class': 'permission-checkbox'},
+    )
+    field.widget.choices = field.choices
+
+
+class UsuarioAdminCreationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        model = Usuario
+        fields = ('username', 'email', 'telefono', 'user_permissions')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        aplicar_estilos_bootstrap(self)
+        self.fields['username'].help_text = ''
+        configurar_campo_telefono(self)
+        configurar_permisos_usuario(self)
 
 
 class UsuarioUpdateForm(forms.ModelForm):
     class Meta:
         model = Usuario
-        fields = ('username', 'email', 'rol', 'telefono')
-        widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'rol': forms.Select(attrs={'class': 'form-select'}),
-            'telefono': forms.TextInput(attrs={'class': 'form-control'}),
-        }
 
-
-class PermisoForm(forms.ModelForm):
-    class Meta:
-        model = Permission
-        fields = ['name', 'codename', 'content_type']
-        labels = {
-            'name': 'Nombre del Permiso',
-            'codename': 'Código (Codename)',
-            'content_type': 'Módulo Asociado',
-        }
-        widgets = {
-            'name': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': ''
-            }),
-            'codename': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': ''
-            }),
-            'content_type': forms.Select(attrs={
-                'class': 'form-select'
-            }),
-        }
+        fields = (
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'telefono',
+            'is_active',
+            'user_permissions',
+        )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['content_type'].queryset = ContentType.objects.all()
-
-        traducciones = {
-            'user': 'Módulo de Usuario',
-            'usuario': 'Módulo de Usuarios',
-            'permission': 'Módulo de Permisos',
-            'group': 'Módulo de Grupos',
-            'session': 'Módulo de Sesiones',
-            'logentry': 'Módulo de Administración',
-            'contenttype': 'Tipos de Contenido',
-        }
-
-        self.fields['content_type'].label_from_instance = lambda obj: traducciones.get(
-            obj.model.lower(),
-            f"Módulo de {obj.model.capitalize()}"
-        )
+        aplicar_estilos_bootstrap(self)
+        configurar_campo_telefono(self)
+        configurar_permisos_usuario(self)

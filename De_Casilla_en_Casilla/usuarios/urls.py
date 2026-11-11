@@ -1,18 +1,21 @@
+# usuarios/urls.py
 from django.urls import path
-
-from . import views
+from django.contrib.auth.views import LogoutView
+from .views import PerfilUsuarioView
+from .views import (
+    RegistroUsuarioView, IniciarSesionView, 
+    PanelInicioView, PanelUsuariosListView, PanelUsuarioCreateView,
+    PanelUsuarioUpdateView, PanelUsuarioDeleteView
+)
 
 urlpatterns = [
-    path('', views.UsuarioListView.as_view(), name='lista_usuarios'),
-    path('nuevo/', views.UsuarioCreateView.as_view(), name='crear_usuario'),
-    path('editar/<int:pk>/', views.UsuarioUpdateView.as_view(), name='editar_usuario'),
-    path('borrar/<int:pk>/', views.UsuarioDeleteView.as_view(), name='borrar_usuario'),
-    path('permisos/', views.PermisoListView.as_view(), name='listar_permisos'),
-    path('permisos/nuevo/', views.PermisoCreateView.as_view(), name='crear_permiso'),
-    path('permisos/editar/<int:pk>/', views.PermisoUpdateView.as_view(), name='editar_permiso'),
-    path('permisos/eliminar/<int:pk>/', views.PermisoDeleteView.as_view(), name='eliminar_permiso'),
-    path('permisos/', views.PermisoListView.as_view(), name='permisos_list'),
-    path('permisos/nuevo/', views.PermisoCreateView.as_view(), name='permiso_create'),
-    path('permisos/editar/<int:pk>/', views.PermisoUpdateView.as_view(), name='permiso_update'),
-    path('permisos/eliminar/<int:pk>/', views.PermisoDeleteView.as_view(), name='permiso_delete'),
+    path('registro/', RegistroUsuarioView.as_view(), name='registro'),
+    path('login/', IniciarSesionView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
+    path('panel/', PanelInicioView.as_view(), name='panel_inicio'),
+    path('panel/usuarios/', PanelUsuariosListView.as_view(), name='panel_usuarios_lista'),
+    path('panel/usuarios/nuevo/', PanelUsuarioCreateView.as_view(), name='panel_usuario_crear'),
+    path('panel/usuarios/<int:pk>/editar/', PanelUsuarioUpdateView.as_view(), name='panel_usuario_editar'),
+    path('panel/usuarios/<int:pk>/eliminar/', PanelUsuarioDeleteView.as_view(), name='panel_usuario_eliminar'),
+    path('perfil/', PerfilUsuarioView.as_view(), name='perfil_usuario'),
 ]

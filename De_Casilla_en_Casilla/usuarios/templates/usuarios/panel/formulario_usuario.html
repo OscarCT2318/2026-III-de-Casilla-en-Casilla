@@ -1,0 +1,43 @@
+    {% extends 'usuarios/base.html' %}
+
+{% block title %}
+    {% if object %}Editar Usuario{% else %}Nuevo Usuario{% endif %} | Panel Admin
+{% endblock %}
+
+{% block content %}
+<section class="account-page">
+  <div class="account-card account-card-narrow glass-panel">
+    <h1>{% if object %}Editar usuario: {{ object.username }}{% else %}Crear nuevo usuario{% endif %}</h1>
+    <form method="post" class="account-form">
+      {% csrf_token %}
+      {% for field in form %}
+        {% if field.name == 'user_permissions' %}
+          <fieldset class="permission-fieldset">
+            <legend>{{ field.label }}</legend>
+            {% if field.help_text %}<p class="permission-help">{{ field.help_text }}</p>{% endif %}
+            {% if field.errors %}<div class="account-error">{{ field.errors }}</div>{% endif %}
+            <div class="permission-grid">
+              {% for choice in field %}
+                <label class="permission-option">{{ choice.tag }}<span>{{ choice.choice_label }}</span></label>
+              {% empty %}
+                <p>No hay permisos disponibles para asignar.</p>
+              {% endfor %}
+            </div>
+          </fieldset>
+        {% else %}
+          <div class="account-field">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.help_text %}<small class="account-help">{{ field.help_text }}</small>{% endif %}
+            {% if field.errors %}<div class="account-error">{{ field.errors }}</div>{% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+      <div class="account-actions">
+        <a href="{% url 'panel_usuarios_lista' %}" class="btn-secondary">Cancelar</a>
+        <button type="submit" class="btn-primary">{% if object %}Guardar cambios{% else %}Crear usuario{% endif %}</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'usuarios/base.html' %}
+
+{% block title %}Mi Perfil | De Casilla en Casilla{% endblock %}
+
+{% block content %}
+<section class="account-page">
+  <div class="account-card glass-panel">
+    <h1>¡Bienvenido, {{ request.user.username }}!</h1>
+    <p>Nos alegra tenerte en <strong>De Casilla en Casilla</strong>.</p>
+    <h2>Tus datos personales</h2>
+    <div class="account-grid">
+      <p><strong>Usuario:</strong> {{ request.user.username }}</p>
+      <p><strong>Correo:</strong> {{ request.user.email|default:"No registrado" }}</p>
+      <p><strong>Teléfono:</strong> {{ request.user.telefono|default:"No registrado" }}</p>
+    </div>
+    <h2>Acceso y permisos</h2>
+    {% if request.user.is_superuser %}
+      <p><span class="account-badge">Superadministrador · acceso completo</span></p>
+    {% else %}
+      <div class="permission-grid">
+        {% for permiso in request.user.permisos_usuarios_asignados %}
+          <span class="account-badge">{{ permiso }}</span>
+        {% empty %}
+          <p>Sin permisos de administración de usuarios.</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% if request.user.puede_acceder_panel %}
+      <div class="account-actions">
+        <a class="btn-primary" href="{% url 'panel_inicio' %}">Ir al panel</a>
+      </div>
+    {% endif %}
+    <a class="btn-primary" href="{% url 'home' %}">Ir al inicio</a>
+  </div>
+</section>
+{% endblock %}

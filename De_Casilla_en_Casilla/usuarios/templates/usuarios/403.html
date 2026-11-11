@@ -1,0 +1,20 @@
+<!-- usuarios/templates/usuarios/403.html -->
+{% extends 'usuarios/base.html' %}
+
+{% block title %}Acceso Denegado{% endblock %}
+
+{% block content %}
+<section class="account-page">
+  <div class="account-card account-card-narrow glass-panel account-center">
+    <h1 class="account-error">403</h1>
+    <h2>Acceso restringido</h2>
+    <p>Hola <strong>{{ request.user.username }}</strong>, tu cuenta no tiene acceso a esta sección.</p>
+    <p>No tienes permisos para entrar a esta sección o realizar esta acción.</p>
+    {% if request.user.puede_ver_panel %}
+      <a href="{% url 'panel_usuarios_lista' %}" class="btn-primary">Volver al panel</a>
+    {% else %}
+      <a href="{% url 'home' %}" class="btn-primary">Volver al inicio</a>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

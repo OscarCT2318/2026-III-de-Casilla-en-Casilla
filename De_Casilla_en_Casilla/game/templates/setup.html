@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Configuración de partida{% endblock %}
+{% block styles %}
+  <link rel="stylesheet" href="{% static 'game/css/setup.css' %}">
+{% endblock %}
+{% block content %}
+  <section class="setup-container">
+    <form class="setup-card glass-panel" id="setup-form" method="post" action="{% url 'setup' %}">
+      {% csrf_token %}
+      <input type="hidden" name="configuration" id="configuration-data">
+      <header class="setup-header">
+        <a class="back-link" href="{% url 'home' %}">← Volver al inicio</a>
+        <h1 class="setup-title">Configuración de la partida</h1>
+        <p class="setup-subtitle">¡Prepara a tus equipos y prepárate para jugar!</p>
+      </header>
+
+      {% if error_message %}
+        <p class="error-toast" role="alert">{{ error_message }}</p>
+      {% endif %}
+
+      <section class="setup-section">
+        <h2 class="section-title"><span class="step-num">1</span> Selecciona el nivel</h2>
+        <div class="level-selection-container">
+          <button type="button" class="level-btn" data-level="Alpha" aria-pressed="false">
+            <span class="level-icon">🍎</span><span class="level-text-container"><span class="level-name">Nivel Alfa</span><span class="level-desc">Sumas y restas (6-8 años)</span></span>
+          </button>
+          <button type="button" class="level-btn" data-level="Beta" aria-pressed="false">
+            <span class="level-icon">🚀</span><span class="level-text-container"><span class="level-name">Nivel Beta</span><span class="level-desc">Multiplicación y división (9-12 años)</span></span>
+          </button>
+        </div>
+      </section>
+
+      <section class="setup-section">
+        <h2 class="section-title"><span class="step-num">2</span> ¿Cuántos equipos van a jugar?</h2>
+        <div class="qty-selection-container" role="group" aria-label="Cantidad de equipos">
+          <button type="button" class="qty-btn" data-qty="2" aria-pressed="false">2 equipos</button>
+          <button type="button" class="qty-btn" data-qty="3" aria-pressed="false">3 equipos</button>
+          <button type="button" class="qty-btn" data-qty="4" aria-pressed="false">4 equipos</button>
+        </div>
+      </section>
+
+      <section class="setup-section">
+        <h2 class="section-title"><span class="step-num">3</span> Personaliza tus equipos</h2>
+        <div class="teams-grid" id="teams-grid">
+          {% for team in teams %}
+            <article class="team-card {{ team.color_class }}" data-team-id="{{ team.id }}">
+              <div class="card-header">
+                <span class="avatar-preview-circle" id="preview-avatar-{{ team.id }}">{{ team.avatar }}</span>
+                <label class="sr-only" for="team-name-{{ team.id }}">Nombre del equipo {{ team.id }}</label>
+                <input class="team-name-input" id="team-name-{{ team.id }}" type="text" maxlength="20" value="{{ team.name }}" autocomplete="off">
+              </div>
+              <div class="avatar-picker-section">
+                <span class="picker-label">Elige mascota:</span>
+                <div class="avatar-options" role="group" aria-label="Mascota del equipo {{ team.id }}">
+                  {% for avatar in team.avatars %}
+                    <button class="avatar-opt-btn{% if avatar == team.avatar %} active{% endif %}" type="button" data-emoji="{{ avatar }}" aria-label="Elegir {{ avatar }}" aria-pressed="{% if avatar == team.avatar %}true{% else %}false{% endif %}">{{ avatar }}</button>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="members-section">
+                <span class="picker-label">Integrantes (1-6):</span>
+                <div class="members-counter-wrapper">
+                  <button class="counter-btn minus-btn" type="button" aria-label="Quitar integrante">−</button>
+                  <span class="counter-value" id="member-count-{{ team.id }}">1</span>
+                  <button class="counter-btn plus-btn" type="button" aria-label="Agregar integrante">+</button>
+                </div>
+                <div class="member-name-list" id="member-list-{{ team.id }}"></div>
+                <div class="visual-members-container" id="visual-members-{{ team.id }}" aria-hidden="true"></div>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="setup-section board-setup">
+        <h2 class="section-title"><span class="step-num">4</span> Tamaño del tablero</h2>
+        <label for="input-board-tiles">Casillas para llegar a la meta</label>
+        <input id="input-board-tiles" class="board-input" type="number" min="10" max="200" value="100">
+      </section>
+      <p id="setup-error" class="error-toast" role="alert" hidden></p>
+      <button class="btn-primary btn-start-adventure" type="submit">¡Comenzar aventura! 🎲</button>
+    </form>
+  </section>
+  {{ submitted_configuration|json_script:"submitted-configuration" }}
+  <script src="{% static 'game/js/setup.js' %}" defer></script>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Inicio · De Casilla en Casilla{% endblock %}
+{% block styles %}
+  <link rel="stylesheet" href="{% static 'game/css/home.css' %}">
+{% endblock %}
+{% block content %}
+  <section class="home-layout">
+    <div class="home-card glass-panel">
+      <span class="welcome-badge">¡Hora de jugar!</span>
+      <h1>Bienvenido a<br><span class="highlight">DE CASILLA EN CASILLA</span></h1>
+      <p class="home-intro">¡Prepárate para una aventura llena de diversión y matemáticas! Resuelve los desafíos de cada casilla y lleva a tu equipo hasta la meta.</p>
+      <a class="btn-primary btn-play-now" href="{% url 'setup' %}">¡Comenzar a jugar! 🎮</a>
+    </div>
+    <section class="how-to glass-panel">
+      <h2>¿Cómo jugar? 🎲</h2>
+      <div class="how-to-grid">
+        <article><span>🍎</span><h3>Nivel Alfa</h3><p>Practica sumas y restas con retos pensados para niñas y niños de 6 a 8 años.</p></article>
+        <article><span>🚀</span><h3>Nivel Beta</h3><p>Resuelve multiplicaciones, divisiones y desafíos contra reloj.</p></article>
+        <article><span>🏁</span><h3>Llega a la meta</h3><p>Forma equipos, gira la ruleta y avanza o retrocede por el tablero.</p></article>
+      </div>
+    </section>
+  </section>
+{% endblock %}

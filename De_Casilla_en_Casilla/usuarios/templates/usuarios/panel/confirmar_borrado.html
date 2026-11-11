@@ -1,0 +1,20 @@
+{% extends 'usuarios/base.html' %}
+
+{% block title %}Confirmar Borrado | Panel Admin{% endblock %}
+
+{% block content %}
+<section class="account-page">
+  <div class="account-card account-card-narrow glass-panel account-danger">
+    <h1 class="account-error">¡Atención!</h1>
+    <p>¿Estás seguro de que deseas eliminar al usuario <strong>{{ object.username }}</strong>?</p>
+    <p>Esta acción no se puede deshacer y el usuario perderá el acceso a De Casilla en Casilla.</p>
+    <form method="post">
+      {% csrf_token %}
+      <div class="account-actions">
+        <a href="{% url 'panel_usuarios_lista' %}" class="btn-secondary">Cancelar</a>
+        <button type="submit" class="btn-danger">Sí, eliminar usuario</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

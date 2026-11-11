@@ -1,0 +1,63 @@
+{% extends 'usuarios/base.html' %}
+
+{% block title %}Gestión de Usuarios{% endblock %}
+
+{% block content %}
+<section class="account-page">
+  <div class="account-card glass-panel">
+    <div class="account-heading">
+      <h1>Panel de usuarios</h1>
+      {% if request.user.puede_crear_usuarios %}
+        <a href="{% url 'panel_usuario_crear' %}" class="btn-primary">+ Nuevo usuario</a>
+      {% endif %}
+    </div>
+    <div class="account-table-wrap">
+      <table class="account-table">
+        <thead>
+          <tr>
+            <th>Usuario</th><th>Correo</th><th>Teléfono</th><th>Permisos</th><th>Estado</th>
+            {% if request.user.puede_editar_usuarios or request.user.puede_eliminar_usuarios %}<th>Acciones</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for usuario in usuarios %}
+          <tr>
+            <td>{{ usuario.username }}</td>
+            <td>{{ usuario.email }}</td>
+            <td>{{ usuario.telefono|default:"N/A" }}</td>
+            <td>
+              {% if usuario.is_superuser %}
+                <span class="account-badge">Superadministrador · acceso completo</span>
+              {% else %}
+                {% for permiso in usuario.permisos_usuarios_asignados %}
+                  <span class="account-badge">{{ permiso }}</span>
+                {% empty %}
+                  <span class="account-badge">Sin permisos</span>
+                {% endfor %}
+              {% endif %}
+            </td>
+            <td>{% if usuario.is_active %}Activo{% else %}Inactivo{% endif %}</td>
+            {% if request.user.puede_editar_usuarios or request.user.puede_eliminar_usuarios %}
+            <td>
+              {% if request.user.puede_editar_usuarios %}
+                <a class="nav-link" href="{% url 'panel_usuario_editar' usuario.id %}">Editar</a>
+              {% endif %}
+              {% if request.user.puede_eliminar_usuarios %}
+                <a class="nav-link" href="{% url 'panel_usuario_eliminar' usuario.id %}">Borrar</a>
+              {% endif %}
+            </td>
+            {% endif %}
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="{% if request.user.puede_editar_usuarios or request.user.puede_eliminar_usuarios %}6{% else %}5{% endif %}">
+              No hay usuarios registrados aún.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}
