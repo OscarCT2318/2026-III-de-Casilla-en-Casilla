@@ -1,0 +1,33 @@
+{% extends 'usuarios/base.html' %}
+
+{% block title %}
+  {% if object %}Editar Pregunta{% else %}Nueva Pregunta{% endif %} | Panel Admin
+{% endblock %}
+
+{% block content %}
+<section class="account-page">
+  <div class="account-card account-card-narrow glass-panel">
+    <h1>{% if object %}Editar pregunta #{{ object.id }}{% else %}Crear nueva pregunta{% endif %}</h1>
+
+    <form method="post" class="account-form">
+      {% csrf_token %}
+
+      {% for field in form %}
+        <div class="account-field">
+          {{ field.label_tag }}
+          {{ field }}
+          {% if field.help_text %}<small class="account-help">{{ field.help_text }}</small>{% endif %}
+          {% if field.errors %}<div class="account-error">{{ field.errors }}</div>{% endif %}
+        </div>
+      {% endfor %}
+
+      <div class="account-actions">
+        <a href="{% url 'preguntas:lista_preguntas' %}" class="btn-secondary">Cancelar</a>
+        <button type="submit" class="btn-primary">
+          {% if object %}Guardar cambios{% else %}Crear pregunta{% endif %}
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

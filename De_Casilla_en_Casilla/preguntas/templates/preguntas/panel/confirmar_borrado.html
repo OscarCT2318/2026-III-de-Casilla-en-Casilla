@@ -1,0 +1,25 @@
+{% extends 'usuarios/base.html' %}
+
+{% block title %}Eliminar Pregunta | Panel Admin{% endblock %}
+
+{% block content %}
+<section class="account-page">
+  <div class="account-card account-card-narrow glass-panel">
+    <h1>Confirmar eliminación</h1>
+    <p>¿Estás seguro de que deseas eliminar permanentemente esta pregunta?</p>
+
+    <div class="account-field" style="margin: 1.25rem 0; padding: 1rem; border-radius: 10px; background: rgba(255,255,255,0.05);">
+      <strong>Nivel:</strong> {{ pregunta.nivel }}<br>
+      <strong>Enunciado:</strong> {{ pregunta.enunciado }}
+    </div>
+
+    <form method="post" class="account-form">
+      {% csrf_token %}
+      <div class="account-actions">
+        <a href="{% url 'preguntas:lista_preguntas' %}" class="btn-secondary">Cancelar</a>
+        <button type="submit" class="btn-primary" style="background-color: #dc2626; border-color: #dc2626;">Sí, eliminar</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'usuarios/base.html' %}
+
+{% block title %}Gestión de Preguntas{% endblock %}
+
+{% block content %}
+<section class="account-page">
+  <div class="account-card glass-panel">
+    <div class="account-heading">
+      <h1>Banco de preguntas</h1>
+      <a href="{% url 'preguntas:crear_pregunta' %}" class="btn-primary">+ Nueva pregunta</a>
+    </div>
+
+    <form method="get" class="account-form" style="margin-bottom: 1.5rem; flex-direction: row; align-items: flex-end; gap: 1rem;">
+      <div class="account-field" style="margin-bottom: 0; min-width: 220px;">
+        <label for="nivel">Filtrar por nivel:</label>
+        <select name="nivel" id="nivel" onchange="this.form.submit()">
+          <option value="">Todos los niveles</option>
+          {% for nivel in niveles %}
+            <option value="{{ nivel.id }}" {% if request.GET.nivel == nivel.id|stringformat:"s" %}selected{% endif %}>
+              {{ nivel.nombre }} ({{ nivel.get_tipo_display }})
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      {% if request.GET.nivel %}
+        <a href="{% url 'preguntas:lista_preguntas' %}" class="btn-secondary">Limpiar filtro</a>
+      {% endif %}
+    </form>
+
+    <div class="account-table-wrap">
+      <table class="account-table">
+        <thead>
+          <tr>
+            <th>Nivel</th>
+            <th>Enunciado</th>
+            <th>Respuesta Correcta</th>
+            <th>Creador</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pregunta in preguntas %}
+          <tr>
+            <td>
+              <span class="account-badge">{{ pregunta.nivel.nombre }} · {{ pregunta.nivel.get_tipo_display }}</span>
+            </td>
+            <td>{{ pregunta.enunciado|truncatechars:70 }}</td>
+            <td>
+              <span class="account-badge">Opción {{ pregunta.respuesta_correcta }}</span>
+            </td>
+            <td>{{ pregunta.creador.username|default:"Sistema" }}</td>
+            <td>
+              <a class="nav-link" href="{% url 'preguntas:editar_pregunta' pregunta.id %}">Editar</a>
+              <a class="nav-link" href="{% url 'preguntas:eliminar_pregunta' pregunta.id %}">Borrar</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5">
+              No hay preguntas registradas aún. ¡Crea la primera!
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}
