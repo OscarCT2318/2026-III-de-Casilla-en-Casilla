@@ -9,6 +9,7 @@
       <a class="nav-link" href="{% url 'perfil_usuario' %}">Mi perfil</a>
       {% if request.user.puede_acceder_panel %}
         <a class="nav-link" href="{% url 'panel_inicio' %}">Panel</a>
+        <a class="nav-link" href="{% url 'preguntas:lista_preguntas' %}">Preguntas</a>
       {% endif %}
       <form method="post" action="{% url 'logout' %}" class="nav-logout-form">
         {% csrf_token %}
