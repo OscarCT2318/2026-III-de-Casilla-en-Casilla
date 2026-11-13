@@ -11,8 +11,9 @@ Este proyecto es una aplicación web desarrollada con Django. A continuación se
 - **Dependencias adicionales**:
   - dj-database-url
   - python-dotenv
-  - psycopg2-binary (para conexión con PostgreSQL)
-- **Base de datos**: PostgreSQL (el proyecto está configurado para usar Supabase)
+   - mysqlclient (para conexión con MySQL/MariaDB; en Linux requiere las bibliotecas de desarrollo de MySQL o MariaDB)
+   - psycopg2-binary (para conexión con PostgreSQL)
+- **Base de datos**: SQLite por defecto; también MySQL/MariaDB y PostgreSQL mediante configuración
 - **Node.js y npm**: Solo si se va a modificar algun archivos JS/CSS y necesitas herramientas de frontend (opcional)
 
 ---
@@ -34,13 +35,24 @@ Este proyecto es una aplicación web desarrollada con Django. A continuación se
 
 ## 3. Configuración de variables de entorno
 
-Crea un archivo `.env` en la raíz del proyecto con el siguiente contenido (ajusta la URL según tu base de datos):
+Crea o ajusta `De_Casilla_en_Casilla/.env`. Para usar MySQL, configura las variables así:
+
+```
+DB_ENGINE=django.db.backends.mysql
+DB_NAME=casilla
+DB_USER=root
+DB_PASSWORD=tu_contraseña
+DB_HOST=localhost
+DB_PORT=3308
+```
+
+Para PostgreSQL puedes usar el mismo esquema `DB_*` cambiando `DB_ENGINE` a `django.db.backends.postgresql`. También se admite `DATABASE_URL` cuando `DB_ENGINE` no está definido, por ejemplo:
 
 ```
 DATABASE_URL=postgresql://usuario:contraseña@host:puerto/nombre_db
 ```
 
-**Nota:** El proyecto utiliza Supabase, pero puedes usar cualquier instancia de PostgreSQL compatible.
+El backend de Django se elige con `DB_ENGINE`; así se pueden usar los motores integrados o backends compatibles de terceros, configurando sus opciones específicas cuando sean necesarias. Si no defines `DB_ENGINE` ni `DATABASE_URL`, se usa SQLite en `De_Casilla_en_Casilla/db.sqlite3`.
 
 ---
 
@@ -94,7 +106,7 @@ El sitio estará disponible en http://127.0.0.1:8000/
 ## 9. Notas adicionales
 
 - No compartas el archivo `.env` ni credenciales sensibles.
-- Si cambias la base de datos, actualiza la variable `DATABASE_URL`.
+- Si cambias la base de datos, actualiza `DB_ENGINE` y sus variables `DB_*`, o define `DATABASE_URL`.
 - Para producción, configura correctamente `DEBUG`, `ALLOWED_HOSTS` y usa un servidor WSGI adecuado.
 
 ---
